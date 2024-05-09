@@ -17,6 +17,12 @@ Requires PyTorch version 1.5.1 or above with CUDA. PyTorch 1.7.1 with CUDA 10.1 
 
 ## Dataset Preparation
 
+### Open Information Extraction
+
+#### CaRB
+
+Clone the dataset and evaluation framework from [link](https://github.com/dair-iitd/CaRB) and install it inside the `deepex` repository. Next, install the `ipdb` package in the conda environment.
+
 ### Relation Classification
 
 #### FewRel
@@ -52,6 +58,9 @@ To modify the settings, please checkout [this section](#arguments).
 ### Open Information Extraction
 ```bash
 bash tasks/OIE_2016.sh
+```
+```bash
+bash tasks/CaRBsh
 ```
 ```bash
 bash tasks/PENN.sh
