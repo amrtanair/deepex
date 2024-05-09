@@ -1,7 +1,7 @@
 from utils import *
 
 def PreprocessData(META_TASK, RAW_PATH, DATA_PATH):
-    if META_TASK in ["OIE_2016"]:
+    if META_TASK in ["OIE_2016", "CaRB"]:
         Create(DATA_PATH)
         data = []
         if os.path.exists(RAW_PATH+"test.txt"):

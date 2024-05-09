@@ -1,0 +1,7 @@
+{
+    "task_abbr": "oie",
+    "task_meta": "CaRB",
+    "data_dir": "CaRB/data/",
+    
+    "gold": "data/gold/test.tsv"
+}

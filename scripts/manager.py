@@ -50,6 +50,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
     parser.add_argument("-t", "--task", dest="task", type=str, default='OIE_2016',
         choices=[
+            'CaRB',
             'OIE_2016',
             'WEB',
             'NYT',
@@ -164,7 +165,7 @@ if __name__=="__main__":
             "python3 scripts/ranking.py -proc_dir {0} -clss_dir {1} -dest {2}".format(args.proc_dir,args.clss_dir,RESULT+".sorted")
         )
 
-    if args.stage<=3 and (args.stage==3 or not args.debug) and (args.task_meta in ['OIE_2016','WEB','NYT','PENN']):
+    if args.stage<=3 and (args.stage==3 or not args.debug) and (args.task_meta in ['OIE_2016','CaRB', 'WEB','NYT','PENN']):
         RESULT = "result/" + ".".join([args.task,args.model,args.ner_mode,f"d{args.max_distance}",f"b{args.beam_size}"])
         SysCall(
             "python3 scripts/oie/evaluate_oie.py -dir {0} -task {1}".format(RESULT+".sorted/",args.task)

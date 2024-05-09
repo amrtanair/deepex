@@ -8,10 +8,15 @@ def SysCall(command):
     ).wait()
 
 def TopK(Ks, task):
+    if task == "CaRB":
+        eval_path = "CaRB/system_outputs/test/"
+    else:
+        eval_path = "supervised-oie/supervised-oie-benchmark/systems_output/"
+    
     for k in Ks:
-        with open(f"supervised-oie/supervised-oie-benchmark/systems_output/deepex.{task.lower()}.{k}.txt","w") as W:
+        with open(f"{eval_path}deepex.{task.lower()}.{k}.txt","w") as W:
             c = 0
-            with open(f"supervised-oie/supervised-oie-benchmark/systems_output/deepex.{task.lower()}.txt","r") as R:
+            with open(f"{eval_path}deepex.{task.lower()}.txt","r") as R:
                 for line in R:
                     data = line.strip().split('\t')
                     if len(data) == 1:
@@ -21,28 +26,52 @@ def TopK(Ks, task):
 
 def BuildEvaluationScript(Ks, task):
     config = LoadJSON(f"tasks/configs/{task}.json")
-    with open(f"supervised-oie/supervised-oie-benchmark/evaluate.{task.lower()}.sh","w") as W:
-        W.write(
-"""
-mkdir -p ./eval_data/
-mkdir -p ./eval_log/
-mkdir -p ./eval_data/{0}/
-mkdir -p ./eval_log/{0}/
-""".format(task)
-        )
-
-        for k in Ks:
+    if task != "CaRB":
+        with open(f"supervised-oie/supervised-oie-benchmark/evaluate.{task.lower()}.sh","w") as W:
             W.write(
-"""
-python3 benchmark.py --gold={0} --out={1} --clausie={2}
-echo "{4}"
-""".format(config['gold'],
-    f"eval_data/{task}/deepex.{task.lower()}.{k}.dat",
-    f"systems_output/deepex.{task.lower()}.{k}.txt",
-    f"eval_log/{task}/deepex.{task.lower()}.{k}.log",
-    f"{task} (top {k})",
-)
+    """  
+    mkdir -p ./eval_data/
+    mkdir -p ./eval_log/
+    mkdir -p ./eval_data/{0}/
+    mkdir -p ./eval_log/{0}/
+    """.format(task)
             )
+
+            for k in Ks:
+                W.write(
+    """
+    python3 benchmark.py --gold={0} --out={1} --clausie={2}
+    echo "{4}"
+    """.format(config['gold'],
+        f"eval_data/{task}/deepex.{task.lower()}.{k}.dat",
+        f"systems_output/deepex.{task.lower()}.{k}.txt",
+        f"eval_log/{task}/deepex.{task.lower()}.{k}.log",
+        f"{task} (top {k})",
+    )
+                )
+    else:
+        with open(f"CaRB/evaluate.{task.lower()}.sh","w") as W:
+            W.write(
+    """
+    mkdir -p ./eval_data/
+    mkdir -p ./eval_log/
+    mkdir -p ./eval_data/{0}/
+    mkdir -p ./eval_log/{0}/
+    """.format(task)
+            )
+
+            for k in Ks:
+                W.write(
+    """
+    python carb.py --gold={0} --out={1} --clausie={2}
+    echo "{3}"
+    """.format(config['gold'],
+        f"dump/deepex.{task.lower()}.{k}.dat",
+        f"system_outputs/test/deepex.{task.lower()}.{k}.txt",
+        f"{task} (top {k})",
+    )
+                )
+
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
@@ -54,7 +83,11 @@ if __name__=="__main__":
     for part in reserves:
         result = LoadJSON(args.dir+f"{part}_result.json")
         data = LoadJSON(args.dir+f"{part}_data.jsonl",jsonl=True)
-        with open(f"supervised-oie/supervised-oie-benchmark/systems_output/deepex.{args.task.lower()}.txt","w") as f:
+        if args.task == "CaRB":
+            eval_path = "CaRB/system_outputs/test/"
+        else:
+            eval_path = "supervised-oie/supervised-oie-benchmark/systems_output/"
+        with open(f"{eval_path}deepex.{args.task.lower()}.txt","w") as f:
             for ID,sentence in enumerate(data,1):
                 strID = '0' * (40 - len(str(ID))) + str(ID)
                 f.write(sentence['text']+"\n")
@@ -67,12 +100,17 @@ if __name__=="__main__":
                             ('"'+sentence['text'][triple['object_char_span'][0]:triple['object_char_span'][1]]+'"')+'\t'+
                             str(triple['score'] if args.dir.endswith(".unsort/") else -triple['contrastive_dis'])+'\n'
                         )
-    K = [3] if args.task=='OIE_2016' else [1]
+    K = [3] if args.task in ['OIE_2016', 'CaRB'] else [1]
     TopK(K,task=args.task)
     BuildEvaluationScript(K,task=args.task)
-    SysCall(
-        f"cp -rf scripts/oie/* supervised-oie/supervised-oie-benchmark/"
-    )
-    SysCall(
-        f"cd supervised-oie/supervised-oie-benchmark/ && bash evaluate.{args.task.lower()}.sh"
-    )
+    if args.task != "CaRB":
+        SysCall(
+            f"cp -rf scripts/oie/* supervised-oie/supervised-oie-benchmark/"
+        )
+        SysCall(
+            f"cd supervised-oie/supervised-oie-benchmark/ && bash evaluate.{args.task.lower()}.sh"
+        )
+    else:
+        SysCall(
+            f"cd CaRB/ && touch dump/deepex.{args.task.lower()}.{K[0]}.dat && bash evaluate.{args.task.lower()}.sh"
+        )

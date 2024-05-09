@@ -87,7 +87,7 @@ python scripts/manager.py --task=<task_name> --model="bert-large-cased" --beam-s
 All tasks are already implemented as above `.sh` files in `tasks/`, using the default arguments.
 
 The following are the most important command-line arguments for the `scripts/manager.py` script:
-- `--task`: The task to be run, supported tasks are `OIE_2016`, `WEB`, `NYT`, `PENN`, `FewRel` and `TACRED`.
+- `--task`: The task to be run, supported tasks are `OIE_2016`, `WEB`, `NYT`, `PENN`,`CaRB`,`FewRel` and `TACRED`.
 - `--model`: The pre-trained model type to be used for generating attention matrices to perform beam search on, supported models are `bert-base-cased` and `bert-large-cased`.
 - `--beam-size`: The beam size during beam search.
 - `--batch-size-per-device`: The batch size on a single device.
