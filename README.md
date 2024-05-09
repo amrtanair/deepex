@@ -60,7 +60,7 @@ To modify the settings, please checkout [this section](#arguments).
 bash tasks/OIE_2016.sh
 ```
 ```bash
-bash tasks/CaRBsh
+bash tasks/CaRB.sh
 ```
 ```bash
 bash tasks/PENN.sh
