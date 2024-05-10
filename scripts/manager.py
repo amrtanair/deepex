@@ -12,7 +12,7 @@ def SysCall(command):
     ).wait()
 
 def PreprocessData(META_TASK, RAW_PATH, DATA_PATH):
-    if META_TASK in ["OIE_2016"]:
+    if META_TASK in ["OIE_2016", "CaRB"]:
         Create(DATA_PATH)
         for i, t in enumerate(['test', 'dev']):
             data = []; file_path = RAW_PATH+f"{t}.txt"
